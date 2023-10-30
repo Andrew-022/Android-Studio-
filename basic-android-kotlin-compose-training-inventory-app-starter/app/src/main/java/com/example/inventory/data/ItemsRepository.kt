@@ -16,28 +16,35 @@
 
 package com.example.inventory.data
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
-@Dao
-interface ItemDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(item: Item)
+/**
+ * Repository that provides insert, update, delete, and retrieve of [Item] from a given data source.
+ */
+interface ItemsRepository {
+    /**
+     * Retrieve all the items from the the given data source.
+     */
+    fun getAllItemsStream(): Flow<List<Item>>
 
-    @Update
-    suspend fun update(item: Item)
+    /**
+     * Retrieve an item from the given data source that matches with the [id].
+     */
+    fun getItemStream(id: Int): Flow<Item?>
 
-    @Delete
-    suspend fun delete(item: Item)
+    /**
+     * Insert item in the data source
+     */
+    suspend fun insertItem(item: Item)
 
-    @Query("SELECT * from items WHERE id = :id")
-    fun getItem(id: Int): Flow<Item>
+    /**
+     * Delete item from the data source
+     */
+    suspend fun deleteItem(item: Item)
 
-    @Query("SELECT * from items ORDER BY name ASC")
-    fun getAllItems(): Flow<List<Item>>
+    /**
+     * Update item in the data source
+     */
+    suspend fun updateItem(item: Item)
 }
+
