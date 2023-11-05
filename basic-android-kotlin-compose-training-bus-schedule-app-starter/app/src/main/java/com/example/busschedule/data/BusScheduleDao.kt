@@ -15,25 +15,30 @@
  */
 package com.example.busschedule.data
 
-import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.Dao
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 /**
- * Represents a single table in the database. Each row is a separate instance of
- * the BusSchedule class. Each property corresponds to a column.
- * Additionally, an ID is needed as a unique identifier for
- * each row in the database.
+ * Provides access to read/write operations on the schedule table.
+ * Used by the view models to format the query results for use in the UI.
  */
-@Entity(tableName = "Schedule")
-data class BusSchedule(
-    @PrimaryKey
-    val id: Int,
-    @NonNull
-    @ColumnInfo(name = "stop_name")
-    val stopName: String,
-    @NonNull
-    @ColumnInfo(name = "arrival_time")
-    val arrivalTimeInMillis: Int
-)
+@Dao
+interface BusScheduleDao {
+    @Query(
+        """
+        SELECT * FROM schedule 
+        ORDER BY arrival_time ASC    
+        """
+    )
+    fun getAll(): Flow<List<BusSchedule>>
+
+    @Query(
+        """
+        SELECT * FROM schedule 
+        WHERE stop_name = :stopName 
+        ORDER BY arrival_time ASC 
+        """
+    )
+    fun getByStopName(stopName: String): Flow<List<BusSchedule>>
+}
